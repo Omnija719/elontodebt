@@ -398,6 +398,7 @@ body {
     letter-spacing: -0.5px;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
+    min-width: 480px;
 }
 
 #elon-net-worth {
