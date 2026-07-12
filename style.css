@@ -393,9 +393,11 @@ body {
 }
 
 .worth-value {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 #elon-net-worth {
@@ -405,6 +407,7 @@ body {
 .digital-font {
     font-family: var(--font-digital);
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Info Lists */
