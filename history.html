@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elon to Debt Ratio History | elontodebt.com</title>
+    <meta name="description" content="Historical daily chart of the Elon Musk net worth vs U.S. National Debt ratio.">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js + Date Adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <style>
+        .history-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 30px; margin-bottom: 30px; }
+        .time-range-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; justify-content: center; }
+        .time-btn {
+            padding: 10px 22px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-primary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+        }
+        .time-btn.active, .time-btn:hover { background: #ffc700; color: #070913; border-color: #ffc700; }
+        #history-chart { width: 100% !important; max-height: 520px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .data-table th { color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="app-container history-container">
+        <header class="main-header">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line logo-icon"></i>
+                <h1>ELON TO DEBT <span class="accent-text">HISTORY</span></h1>
+            </div>
+            <p class="subtitle">Daily Ratio Trends • Interactive Financial View</p>
+        </header>
+
+        <section class="chart-card glass-card">
+            <h2 style="margin-bottom: 20px; display:flex; align-items:center; gap:12px;">
+                <i class="fa-solid fa-chart-line"></i> Ratio Over Time
+            </h2>
+            
+            <div class="time-range-buttons">
+                <button class="time-btn" data-range="7">7 Days</button>
+                <button class="time-btn" data-range="30">30 Days</button>
+                <button class="time-btn active" data-range="90">90 Days</button>
+                <button class="time-btn" data-range="365">1 Year</button>
+                <button class="time-btn" data-range="all">All Time</button>
+            </div>
+            
+            <canvas id="history-chart"></canvas>
+            
+            <p style="text-align:center; margin-top:15px; color:#90A0B7; font-size:0.9rem;">
+                Each point = daily recorded ratio. Higher value = more Elons needed to cover the debt.
+            </p>
+        </section>
+
+        <section class="chart-card glass-card">
+            <h3 style="margin-bottom:20px;">Recent Daily Records</h3>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Ratio (Elons)</th>
+                            <th>Elon Net Worth</th>
+                            <th>U.S. Debt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="main-footer">
+            <p>Data captured daily from the live tracker.</p>
+            <p><a href="/" style="color:#ffc700;">← Back to Live Dashboard</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Background animation (copied from your app.js - no changes needed to original)
+        function initBackgroundAnimation() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const particleCount = 55;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width; this.y = Math.random() * height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.type = this.x < width / 2 ? 'space' : 'digital';
+                    this.color = this.type === 'space' ? 'rgba(232, 33, 39, ' : 'rgba(0, 230, 255, ';
+                    this.alpha = Math.random() * 0.5 + 0.1;
+                    this.fadeSpeed = Math.random() * 0.005 + 0.002; this.fadeDir = 1;
+                }
+                update() {
+                    this.x += this.x < width / 2 ? this.speedX : this.speedX * 0.5;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > width) this.x = Math.random() * width;
+                    if (this.y < 0 || this.y > height) this.y = Math.random() * height;
+                    this.type = this.x < width / 2 ? 'space' : 'digital';
+                    this.color = this.type === 'space' ? 'rgba(232, 33, 39, ' : 'rgba(0, 230, 255, ';
+                    this.alpha += this.fadeSpeed * this.fadeDir;
+                    if (this.alpha > 0.6 || this.alpha < 0.1) this.fadeDir *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    if (this.type === 'space') {
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `${this.color}${this.alpha})`; ctx.fill();
+                    } else {
+                        ctx.rect(this.x, this.y, this.size * 2, this.size * 2);
+                        ctx.fillStyle = `${this.color}${this.alpha * 0.8})`; ctx.fill();
+                    }
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+            function animate() {
+                ctx.fillStyle = 'rgba(7, 9, 19, 0.1)'; ctx.fillRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                const gradient = ctx.createLinearGradient(width / 2 - 2, 0, width / 2 + 2, height);
+                gradient.addColorStop(0, 'rgba(255, 199, 0, 0.01)');
+                gradient.addColorStop(0.5, 'rgba(255, 199, 0, 0.08)');
+                gradient.addColorStop(1, 'rgba(255, 199, 0, 0.01)');
+                ctx.fillStyle = gradient; ctx.fillRect(width / 2 - 1, 0, 2, height);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // History page logic
+        let chartInstance = null;
+        let allHistoryData = [];
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('history.json');
+                if (!res.ok) throw new Error('No history yet');
+                allHistoryData = await res.json();
+                allHistoryData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                renderChart(allHistoryData);
+                renderTable(allHistoryData.slice(-30));
+                setupRangeButtons();
+            } catch (e) {
+                console.error(e);
+                document.querySelector('.chart-card').innerHTML = 
+                    `<p style="text-align:center; color:#ff6b6b;">History will start populating after the next daily update.</p>`;
+            }
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('history-chart');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'Ratio (Elons)',
+                        data: data.map(d => parseFloat(d.ratio)),
+                        borderColor: '#ffc700',
+                        backgroundColor: 'rgba(255, 199, 0, 0.12)',
+                        borderWidth: 3,
+                        tension: 0.25,
+                        fill: true,
+                        pointRadius: 2.5,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ffc700'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { type: 'time', time: { tooltipFormat: 'MMM dd, yyyy' }, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#90A0B7' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#90A0B7', callback: v => v.toFixed(1) + ' Elons' } }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+        }
+
+        function filterByRange(days) {
+            if (days === 'all') return allHistoryData;
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - parseInt(days));
+            return allHistoryData.filter(item => new Date(item.date) >= cutoff);
+        }
+
+        function setupRangeButtons() {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const filtered = filterByRange(btn.dataset.range);
+                    renderChart(filtered);
+                });
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '';
+            data.slice().reverse().forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td><strong>${parseFloat(item.ratio).toFixed(2)}</strong></td>
+                    <td>$${(item.elon_worth / 1_000_000_000).toFixed(2)}B</td>
+                    <td>$${(item.us_debt / 1_000_000_000_000).toFixed(2)}T</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBackgroundAnimation();
+            loadHistory();
+        });
+    </script>
+</body>
+</html>
