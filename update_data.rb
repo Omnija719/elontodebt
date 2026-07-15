@@ -51,27 +51,36 @@ begin
   File.write("#{script_dir}/data.json", JSON.pretty_generate(result))
   puts "Successfully updated data.json"
 
-    # === Improved History Block (adds entry daily) ===
+  # === Smart History: Only log when ratio actually changes ===
   history_file = "#{script_dir}/history.json"
   history = File.exist?(history_file) ? JSON.parse(File.read(history_file)) : []
 
-  # Clean any bad entries
-  history.reject! { |h| h.nil? || h['date'].nil? || h['date'].to_s.strip.empty? }
+  # Clean bad entries
+  history.reject! { |h| h.nil? || h['date'].nil? }
 
-  today = Time.now.getlocal("-06:00").strftime("%Y-%m-%d")   # Use MDT date
+  today = Time.now.getlocal("-06:00").strftime("%Y-%m-%d")
 
-  # Only add if we don't already have today's entry
-  if history.none? { |h| h['date'] == today }
+  # Get the latest ratio (if any)
+  last_ratio = history.last ? history.last['ratio'].to_f : 0.0
+
+  # Only add if ratio changed by more than 0.01 (adjust threshold if you want)
+  if (ratio - last_ratio).abs > 0.01 || history.empty?
     history << {
       date: today,
       ratio: ratio,
       elon_worth: elon_worth,
       us_debt: total_debt
     }
-    puts "Added new history entry for today (#{today})"
+    puts "Added new history entry for #{today} (ratio changed from #{last_ratio.round(4)} to #{ratio.round(4)})"
   else
-    puts "History entry for today (#{today}) already exists - skipping"
+    puts "Ratio unchanged (#{ratio.round(4)}) — skipping history entry for #{today}"
   end
+
+  # Safe sort
+  history.sort_by! { |h| h['date'].to_s }
+
+  File.write(history_file, JSON.pretty_generate(history))
+  puts "History updated (#{history.length} total records)"
 
   # Safe sort
   history.sort_by! { |h| h['date'].to_s }
