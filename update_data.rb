@@ -51,24 +51,28 @@ begin
   File.write("#{script_dir}/data.json", JSON.pretty_generate(result))
   puts "Successfully updated data.json"
 
-# === Maintain historical records ===
-history_file = "#{script_dir}/history.json"
-history = File.exist?(history_file) ? JSON.parse(File.read(history_file)) : []
+  # === History Block - Safer Version ===
+  history_file = "#{script_dir}/history.json"
+  history = File.exist?(history_file) ? JSON.parse(File.read(history_file)) : []
 
-# Prevent duplicate for the same date
-history.reject! { |h| h['date'] == debt_date }
+  # Remove any bad entries with missing date
+  history.reject! { |h| h.nil? || h['date'].nil? || h['date'].to_s.strip.empty? }
 
-history << {
-  date: debt_date,
-  ratio: ratio,
-  elon_worth: elon_worth,
-  us_debt: total_debt
-}
+  # Prevent duplicate for today
+  history.reject! { |h| h['date'] == debt_date }
 
-history.sort_by! { |h| h['date'] }
+  history << {
+    date: debt_date,
+    ratio: ratio,
+    elon_worth: elon_worth,
+    us_debt: total_debt
+  }
 
-File.write(history_file, JSON.pretty_generate(history))
-puts "History updated → #{history.length} total records"
+  # Safe sort
+  history.sort_by! { |h| h['date'].to_s }
+
+  File.write(history_file, JSON.pretty_generate(history))
+  puts "History updated (#{history.length} records)"
   
   # Generate dynamic social share image
   puts "Generating dynamic social share image..."
