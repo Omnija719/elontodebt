@@ -51,6 +51,25 @@ begin
   File.write("#{script_dir}/data.json", JSON.pretty_generate(result))
   puts "Successfully updated data.json"
 
+# === Maintain historical records ===
+history_file = "#{script_dir}/history.json"
+history = File.exist?(history_file) ? JSON.parse(File.read(history_file)) : []
+
+# Prevent duplicate for the same date
+history.reject! { |h| h['date'] == debt_date }
+
+history << {
+  date: debt_date,
+  ratio: ratio,
+  elon_worth: elon_worth,
+  us_debt: total_debt
+}
+
+history.sort_by! { |h| h['date'] }
+
+File.write(history_file, JSON.pretty_generate(history))
+puts "History updated → #{history.length} total records"
+  
   # Generate dynamic social share image
   puts "Generating dynamic social share image..."
   if system("python3 \"#{script_dir}/generate_og.py\"")
