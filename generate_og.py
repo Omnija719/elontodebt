@@ -20,8 +20,8 @@ def generate_social_image():
     # Load fonts - significantly larger (roughly 3x)
     font_path = os.path.join(os.path.dirname(__file__), 'Orbitron-Bold.ttf')
     try:
-        ratio_font = ImageFont.truetype(font_path, 220)     # Big ratio number
-        elons_font = ImageFont.truetype(font_path, 220)      # "ELONS" label
+        ratio_font = ImageFont.truetype(font_path, 140)     # Big ratio number
+        elons_font = ImageFont.truetype(font_path, 140)      # "ELONS" label
     except:
         ratio_font = ImageFont.load_default()
         elons_font = ImageFont.load_default()
