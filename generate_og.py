@@ -17,39 +17,38 @@ def generate_social_image():
     draw = ImageDraw.Draw(img)
     width, height = img.size
     
-    # Load fonts (increased sizes)
+    # Load fonts - significantly larger (roughly 3x)
     font_path = os.path.join(os.path.dirname(__file__), 'Orbitron-Bold.ttf')
     try:
-        title_font = ImageFont.truetype(font_path, 68)      # Title
-        ratio_font = ImageFont.truetype(font_path, 150)     # Big ratio number
-        label_font = ImageFont.truetype(font_path, 42)      # "ELONS"
+        ratio_font = ImageFont.truetype(font_path, 160)     # Big ratio number
+        elons_font = ImageFont.truetype(font_path, 90)      # "ELONS" label
     except:
-        title_font = ImageFont.load_default()
         ratio_font = ImageFont.load_default()
-        label_font = ImageFont.load_default()
+        elons_font = ImageFont.load_default()
     
-    # === Centering helper ===
-    def get_centered_x(text, font):
-        bbox = draw.textbbox((0, 0), text, font=font)
-        text_width = bbox[2] - bbox[0]
-        return (width - text_width) / 2
+    # === Positioning (Y values you can easily adjust) ===
+    ratio_y = 280          # ← Vertical position of the big ratio number
+    elons_y = 310          # ← Vertical position of "ELONS" (slightly lower to align)
     
-    # === Better vertical positioning (more centered) ===
-    title_y = 110
-    ratio_y = 230
-    label_y = 410
+    # Calculate horizontal positions
+    ratio_bbox = draw.textbbox((0, 0), ratio_str, font=ratio_font)
+    ratio_width = ratio_bbox[2] - ratio_bbox[0]
     
-    # Draw Title
-    draw.text((get_centered_x("ELON TO DEBT RATIO", title_font), title_y), 
-              "ELON TO DEBT RATIO", fill="#FFC700", font=title_font)
+    elons_bbox = draw.textbbox((0, 0), "ELONS", font=elons_font)
+    elons_width = elons_bbox[2] - elons_bbox[0]
     
-    # Draw Big Ratio Number
-    draw.text((get_centered_x(ratio_str, ratio_font), ratio_y), 
-              ratio_str, fill="#FFFFFF", font=ratio_font)
+    # Center the whole "ratio ELONS" group
+    total_width = ratio_width + 40 + elons_width   # 40 = spacing between ratio and ELONS
+    start_x = (width - total_width) / 2
     
-    # Draw "ELONS" label
-    draw.text((get_centered_x("ELONS", label_font), label_y), 
-              "ELONS", fill="#FFC700", font=label_font)
+    ratio_x = start_x
+    elons_x = start_x + ratio_width + 40
+    
+    # Draw Ratio Number
+    draw.text((ratio_x, ratio_y), ratio_str, fill="#FFFFFF", font=ratio_font)
+    
+    # Draw "ELONS" on the same line
+    draw.text((elons_x, elons_y), "ELONS", fill="#FFC700", font=elons_font)
     
     # Save
     output_path = os.path.join(os.path.dirname(__file__), 'og_image.png')
