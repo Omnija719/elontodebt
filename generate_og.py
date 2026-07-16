@@ -27,8 +27,8 @@ def generate_social_image():
         elons_font = ImageFont.load_default()
     
     # === Positioning (Y values you can easily adjust) ===
-    ratio_y = 280          # ← Vertical position of the big ratio number
-    elons_y = 310          # ← Vertical position of "ELONS" (slightly lower to align)
+    ratio_y = 200          # ← Vertical position of the big ratio number
+    elons_y = 200          # ← Vertical position of "ELONS" (slightly lower to align)
     
     # Calculate horizontal positions
     ratio_bbox = draw.textbbox((0, 0), ratio_str, font=ratio_font)
