@@ -20,15 +20,15 @@ def generate_social_image():
     # Load fonts - significantly larger (roughly 3x)
     font_path = os.path.join(os.path.dirname(__file__), 'Orbitron-Bold.ttf')
     try:
-        ratio_font = ImageFont.truetype(font_path, 300)     # Big ratio number
-        elons_font = ImageFont.truetype(font_path, 250)      # "ELONS" label
+        ratio_font = ImageFont.truetype(font_path, 500)     # Big ratio number
+        elons_font = ImageFont.truetype(font_path, 450)      # "ELONS" label
     except:
         ratio_font = ImageFont.load_default()
         elons_font = ImageFont.load_default()
     
     # === Positioning (Y values you can easily adjust) ===
-    ratio_y = 200          # ← Vertical position of the big ratio number
-    elons_y = 200          # ← Vertical position of "ELONS" (slightly lower to align)
+    ratio_y = 500          # ← Vertical position of the big ratio number
+    elons_y = 500          # ← Vertical position of "ELONS" (slightly lower to align)
     
     # Calculate horizontal positions
     ratio_bbox = draw.textbbox((0, 0), ratio_str, font=ratio_font)
