@@ -65,8 +65,32 @@ begin
   File.write("#{script_dir}/data.json", JSON.pretty_generate(result))
   puts "Successfully updated data.json"
 
-  # === Your existing history block goes here ===
-  # (paste the smart history code I gave you earlier)
+  # === History: Log every time ratio changes ===
+  history_file = "#{script_dir}/history.json"
+  history = File.exist?(history_file) ? JSON.parse(File.read(history_file)) : []
+
+  # Clean bad entries
+  history.reject! { |h| h.nil? || h['date'].nil? }
+
+  today = Time.now.getlocal("-06:00").strftime("%Y-%m-%d")
+  last_ratio = history.last ? history.last['ratio'].to_f : nil
+
+  # Add new entry if ratio is different from last one
+  if last_ratio.nil? || (ratio - last_ratio).abs > 0.0001
+    history << {
+      date: today,
+      ratio: ratio,
+      elon_worth: elon_worth,
+      us_debt: total_debt
+    }
+    puts "Added new history entry for #{today} (ratio changed)"
+  else
+    puts "Ratio unchanged — skipping history entry"
+  end
+
+  history.sort_by! { |h| h['date'].to_s }
+  File.write(history_file, JSON.pretty_generate(history))
+  puts "History updated (#{history.length} total records)"
 
   # Generate OG image
   puts "Generating dynamic social share image..."
