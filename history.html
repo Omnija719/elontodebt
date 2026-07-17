@@ -194,7 +194,21 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { type: 'time', time: { tooltipFormat: 'MMM dd, yyyy' }, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#90A0B7' } },
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',                    // Force it to show by day
+                                tooltipFormat: 'MMM dd, yyyy',
+                                displayFormats: {
+                                    day: 'MMM dd, yyyy'               // This controls what shows on the axis
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            ticks: { 
+                                color: '#90A0B7',
+                                maxTicksLimit: 12               // Prevents too many labels
+                            }
+                        },
                         y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#90A0B7', callback: v => v.toFixed(1) + ' Elons' } }
                     },
                     interaction: { intersect: false, mode: 'index' }
