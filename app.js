@@ -1,5 +1,5 @@
 // --- Constants & Config ---
-const DEBT_GROWTH_PER_SEC = 45000; // Estimated U.S. Debt increase per second ($45,000)
+const DEBT_GROWTH_PER_SEC = 95000; // Estimated U.S. Debt increase per second ($45,000)
 const CITIZEN_POPULATION = 338000000; // Estimated US population
 
 // State variables
@@ -258,7 +258,7 @@ function renderRatioDetails() {
     // 4. Calculate Fact items
     // Buyout Days funded = Elon worth / total US federal spending per day
     // U.S. Federal government daily spending is roughly $17-18 Billion ($6.3 Trillion / 365)
-    const dailySpendingEstimate = 17500000000;
+    const dailySpendingEstimate = 22500000000;
     const daysFunded = elonWorth / dailySpendingEstimate;
     factDaysFundedEl.textContent = daysFunded.toFixed(1);
 
@@ -268,7 +268,7 @@ function renderRatioDetails() {
     factHoursAccumulateEl.textContent = hoursToAccumulate.toFixed(1);
 
     // Mars missions: Estimate cost of Mars crewed mission ~ $10 Billion
-    const marsMissionCost = 10000000000;
+    const marsMissionCost = 17000000000;
     const marsMissions = baseDebt / marsMissionCost;
     factMarsMissionsEl.textContent = Math.floor(marsMissions).toLocaleString();
 }
