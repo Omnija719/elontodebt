@@ -262,10 +262,10 @@ function renderRatioDetails() {
     const daysFunded = elonWorth / dailySpendingEstimate;
     factDaysFundedEl.textContent = daysFunded.toFixed(1);
 
-    // Debt accumulation hours to equal 1 Elon = Elon worth / Debt growth rate per hour
-    const growthPerHour = DEBT_GROWTH_PER_SEC * 3600;
-    const hoursToAccumulate = elonWorth / growthPerHour;
-    factHoursAccumulateEl.textContent = hoursToAccumulate.toFixed(1);
+    // Debt accumulation days to equal 1 Elon
+    const growthPerDay = DEBT_GROWTH_PER_SEC * 86400;           // 86400 seconds in a day
+    const daysToAccumulate = elonWorth / growthPerDay;
+    factHoursAccumulateEl.textContent = daysToAccumulate.toFixed(1);
 
     // Mars missions: Estimate cost of Mars crewed mission ~ $10 Billion
     const marsMissionCost = 17000000000;
