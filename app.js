@@ -1,7 +1,7 @@
 // --- Constants & Config ---
 const DEBT_GROWTH_PER_SEC = 95000;
 const CITIZEN_POPULATION = 338000000;
-const DEBT_INTEREST_RATE = 0.038; // 3.8%
+const DEBT_INTEREST_RATE = 0.038;
 
 // State variables
 let baseDebt = 0;
@@ -27,14 +27,13 @@ const factDaysFundedEl = document.getElementById('fact-days-funded');
 const factHoursAccumulateEl = document.getElementById('fact-hours-accumulate');
 const factMarsMissionsEl = document.getElementById('fact-mars-missions');
 
-// --- Background Animation (kept from your original) ---
+// Background Animation
 function initBackgroundAnimation() {
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
-    
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
-    
+
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
@@ -56,7 +55,6 @@ function initBackgroundAnimation() {
             this.fadeSpeed = Math.random() * 0.005 + 0.002;
             this.fadeDir = 1;
         }
-
         update() {
             this.x += this.x < width / 2 ? this.speedX : this.speedX * 0.5;
             this.y += this.speedY;
@@ -67,7 +65,6 @@ function initBackgroundAnimation() {
             this.alpha += this.fadeSpeed * this.fadeDir;
             if (this.alpha > 0.6 || this.alpha < 0.1) this.fadeDir *= -1;
         }
-
         draw() {
             ctx.beginPath();
             if (this.type === 'space') {
@@ -82,9 +79,7 @@ function initBackgroundAnimation() {
         }
     }
 
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
+    for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
     function animate() {
         ctx.fillStyle = 'rgba(7, 9, 19, 0.1)';
@@ -95,7 +90,6 @@ function initBackgroundAnimation() {
     animate();
 }
 
-// --- Formatters ---
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
         style: 'currency', currency: 'USD', minimumFractionDigits: 0
@@ -106,14 +100,12 @@ function formatBillion(amount) {
     return (amount / 1_000_000_000).toFixed(2);
 }
 
-// --- Fetch Data ---
 async function loadData() {
     try {
         const response = await fetch('data.json');
         if (!response.ok) throw new Error('Data file not found');
-        
         const data = await response.json();
-        
+
         baseDebt = data.us_debt;
         baseDebtDate = new Date(data.us_debt_date + 'T12:00:00');
         elonWorth = data.elon_worth;
@@ -129,17 +121,14 @@ async function loadData() {
 
         startDebtClock();
         renderRatioDetails();
-
     } catch (error) {
         console.error('Error loading data:', error);
         if (ratioDescEl) ratioDescEl.textContent = 'Error loading live tracker.';
     }
 }
 
-// --- Live Debt Clock ---
 function startDebtClock() {
     if (!usDebtClockEl) return;
-
     function tick() {
         const now = new Date();
         const timeDiffSeconds = Math.max(0, (now.getTime() - baseDebtDate.getTime()) / 1000);
@@ -150,11 +139,9 @@ function startDebtClock() {
     requestAnimationFrame(tick);
 }
 
-// --- Render Visualizer & Facts (FULL VERSION) ---
 function renderRatioDetails() {
     if (!ratioNumberEl) return;
 
-    // Ratio Number
     ratioNumberEl.textContent = ratio.toFixed(4);
 
     const elonBillions = formatBillion(elonWorth);
@@ -164,7 +151,6 @@ function renderRatioDetails() {
         ratioDescEl.innerHTML = `It would take exactly <strong class="accent-text">${ratio.toFixed(2)} clones</strong> of Elon Musk's entire fortune ($${elonBillions}B) to pay off the U.S. National Debt ($${debtTrillions}T).`;
     }
 
-    // Grid Visualizer
     if (visualizerWorthEl) visualizerWorthEl.textContent = elonBillions;
     if (gridVisualizerEl) gridVisualizerEl.innerHTML = '';
 
@@ -175,7 +161,6 @@ function renderRatioDetails() {
         const overlay = document.createElement('div');
         overlay.className = 'fill-overlay';
         iconBox.appendChild(overlay);
-
         const icon = document.createElement('i');
         icon.className = 'fa-solid fa-user-tie';
         iconBox.appendChild(icon);
@@ -185,4 +170,31 @@ function renderRatioDetails() {
         } else {
             iconBox.classList.add('partial');
             const percentRemaining = (ratio - Math.floor(ratio)) * 100;
-            overlay.style.height = `${percentRemaining}%
+            overlay.style.height = `${percentRemaining}%`;
+        }
+        if (gridVisualizerEl) gridVisualizerEl.appendChild(iconBox);
+    }
+
+    // Facts
+    const dailySpendingEstimate = 22500000000;
+    if (factDaysFundedEl) factDaysFundedEl.textContent = (elonWorth / dailySpendingEstimate).toFixed(1);
+
+    const growthPerDay = DEBT_GROWTH_PER_SEC * 86400;
+    if (factHoursAccumulateEl) factHoursAccumulateEl.textContent = (elonWorth / growthPerDay).toFixed(1);
+
+    const marsMissionCost = 17000000000;
+    if (factMarsMissionsEl) factMarsMissionsEl.textContent = Math.floor(baseDebt / marsMissionCost).toLocaleString();
+
+    // New Fact
+    const factYearlyInterestEl = document.getElementById('fact-yearly-interest');
+    if (factYearlyInterestEl) {
+        const yearlyInterest = baseDebt * DEBT_INTEREST_RATE;
+        const elonsForYearlyInterest = yearlyInterest / elonWorth;
+        factYearlyInterestEl.textContent = elonsForYearlyInterest.toFixed(2);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initBackgroundAnimation();
+    loadData();
+});
