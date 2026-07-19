@@ -19,17 +19,12 @@
     <link rel="icon" href="/E2DIcon.png" type="image/png">
     <link rel="apple-touch-icon" href="/E2DIcon.png">
     
-    <!-- Twitter Card (X) - These are required for rich preview -->
+    <!-- Twitter Card (X) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Elon to Debt Ratio | Real-Time Wealth vs National Debt">
     <meta name="twitter:description" content="See how many Elon Musks it would take to pay off the U.S. National Debt in real-time. Updates daily.">
     <meta name="twitter:image" content="https://elontodebt.com/og_image.png">
     <meta name="twitter:site" content="@philgrim_">
-    
-    <!-- Also good to have these for compatibility -->
-    <meta property="og:image" content="https://elontodebt.com/og_image.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +38,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Canvas for Space/Digital Particle Effect -->
+    <!-- Background Canvas -->
     <canvas id="bg-canvas"></canvas>
 
     <div class="app-container">
@@ -56,7 +51,7 @@
             <p class="subtitle">Comparing a Billionaire's Empire to the U.S. Federal Deficit</p>
         </header>
 
-        <!-- Ratio Hero Panel (Centerpiece) -->
+        <!-- Ratio Hero -->
         <section class="hero-ratio-section">
             <div class="glass-card ratio-card">
                 <h2>THE DEBT RATIO</h2>
@@ -72,17 +67,15 @@
                 <div class="visualizer-container">
                     <h3>Visualizing the Scale</h3>
                     <p class="visualizer-meta">Each icon below represents 1 full Elon Musk Net Worth ($<span id="visualizer-worth">...</span>B)</p>
-                    <div class="grid-visualizer" id="grid-visualizer">
-                        <!-- Icons will be dynamically injected here by JS -->
-                    </div>
+                    <div class="grid-visualizer" id="grid-visualizer"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Split Dashboards (Left: Elon / Right: US Debt) -->
+        <!-- Split Dashboards -->
         <div class="dashboard-grid">
             
-            <!-- Left Dashboard: Elon Musk -->
+            <!-- Elon Panel -->
             <section class="dashboard-panel elon-panel">
                 <div class="glass-card theme-card elon-theme-card">
                     <div class="card-header">
@@ -100,13 +93,7 @@
                         <div class="worth-label">Estimated Net Worth</div>
                         <div id="elon-net-worth" class="worth-value loading-pulse">$0.00</div>
                     </div>
-                    <div class="fact-card">
-                        <div class="fact-icon">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <h4>Yearly Interest Coverage</h4>
-                        <p>It would take <strong id="fact-yearly-interest">...</strong> Elons to cover the yearly interest on the U.S. national debt.</p>
-                    </div>
+
                     <div class="info-list">
                         <div class="info-row">
                             <span class="info-label"><i class="fa-solid fa-industry"></i> Source of Wealth</span>
@@ -124,7 +111,7 @@
                 </div>
             </section>
 
-            <!-- Right Dashboard: US Debt Clock -->
+            <!-- Debt Panel -->
             <section class="dashboard-panel debt-panel">
                 <div class="glass-card theme-card debt-theme-card">
                     <div class="card-header">
@@ -150,7 +137,7 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fa-solid fa-arrow-trend-up"></i> Estimated Growth Rate</span>
-                            <span class="info-val text-debt">+$45,000 / sec</span>
+                            <span class="info-val text-debt">+$95,000 / sec</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label"><i class="fa-solid fa-user-group"></i> Debt Per Citizen</span>
@@ -164,14 +151,15 @@
                     </div>
                 </div>
             </section>
-
         </div>
 
-        <!-- Fun Facts Section -->
+        <!-- Perspective & Facts Section -->
         <section class="fun-facts-section">
             <div class="glass-card facts-card">
                 <h2><i class="fa-solid fa-lightbulb text-gold"></i> Perspective & Facts</h2>
                 <div class="facts-grid">
+
+                    <!-- Fact 1 -->
                     <div class="fact-item">
                         <div class="fact-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
                         <div class="fact-content">
@@ -179,6 +167,8 @@
                             <p>If Elon Musk liquified his entire net worth, he could fund the US government for roughly <strong id="fact-days-funded">...</strong> days.</p>
                         </div>
                     </div>
+
+                    <!-- Fact 2 -->
                     <div class="fact-item">
                         <div class="fact-icon"><i class="fa-solid fa-hourglass-half"></i></div>
                         <div class="fact-content">
@@ -186,6 +176,8 @@
                             <p>It takes the U.S. national debt just <strong id="fact-hours-accumulate">...</strong> days to increase by one full Elon Musk Net Worth.</p>
                         </div>
                     </div>
+
+                    <!-- Fact 3 -->
                     <div class="fact-item">
                         <div class="fact-icon"><i class="fa-solid fa-plane-departure"></i></div>
                         <div class="fact-content">
@@ -193,42 +185,44 @@
                             <p>With the current U.S. Debt, SpaceX could fund approximately <strong id="fact-mars-missions">...</strong> crewed missions to Mars.</p>
                         </div>
                     </div>
-                    <div class="fact-card">
-                        <div class="fact-icon">
-                            <i class="fas fa-percentage"></i>
+
+                    <!-- Fact 4 (New - Fixed structure) -->
+                    <div class="fact-item">
+                        <div class="fact-icon"><i class="fa-solid fa-percentage"></i></div>
+                        <div class="fact-content">
+                            <h4>Yearly Interest Coverage</h4>
+                            <p>It would take <strong id="fact-yearly-interest">...</strong> Elons to cover the yearly interest on the U.S. national debt.</p>
                         </div>
-                        <h4>Yearly Interest Coverage</h4>
-                        <p>It would take <strong id="fact-yearly-interest">...</strong> Elons to cover the yearly interest on the U.S. national debt.</p>
                     </div>
+
                 </div>
             </div>
         </section>
 
-<!-- History CTA Button -->
-<section style="text-align: center; margin: 50px 0 20px;">
-    <a href="/history" 
-       style="display: inline-flex; align-items: center; gap: 12px; 
-              background: linear-gradient(135deg, #ffc700, #e6b300); 
-              color: #070913; font-weight: 700; font-size: 1.1rem; 
-              padding: 18px 36px; border-radius: 12px; text-decoration: none;
-              transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(255, 199, 0, 0.35);">
-        <i class="fa-solid fa-chart-line"></i> 
-        <span>View Full History & Charts</span>
-    </a>
-    <p style="margin-top: 12px; color: #90A0B7; font-size: 0.95rem;">
-        Interactive daily ratio trends • Day / Month / Year views
-    </p>
-</section>
-        
+        <!-- History Button -->
+        <section style="text-align: center; margin: 50px 0 20px;">
+            <a href="/history" 
+               style="display: inline-flex; align-items: center; gap: 12px; 
+                      background: linear-gradient(135deg, #ffc700, #e6b300); 
+                      color: #070913; font-weight: 700; font-size: 1.1rem; 
+                      padding: 18px 36px; border-radius: 12px; text-decoration: none;
+                      transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(255, 199, 0, 0.35);">
+                <i class="fa-solid fa-chart-line"></i> 
+                <span>View Full History & Charts</span>
+            </a>
+            <p style="margin-top: 12px; color: #90A0B7; font-size: 0.95rem;">
+                Interactive daily ratio trends • Day / Month / Year views
+            </p>
+        </section>
+
         <!-- Footer -->
         <footer class="main-footer">
             <p>Data updated daily at 11:00 AM MST. Last Scrape: <span id="last-updated-time">Loading...</span></p>
             <p class="sources">Sources: <a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny" target="_blank">U.S. Treasury API</a> | <a href="https://www.forbes.com/real-time-billionaires/" target="_blank">Forbes Real-Time Billionaires</a></p>
-            <p class="disclaimer">This website is for informational and educational purposes only. Live ticker represents a mathematical projection based on official daily reporting.</p>
+            <p class="disclaimer">This website is for informational and educational purposes only.</p>
         </footer>
     </div>
 
-    <!-- Script -->
     <script src="app.js"></script>
 </body>
 </html>
