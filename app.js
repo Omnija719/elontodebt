@@ -277,7 +277,7 @@ function renderRatioDetails() {
     factMarsMissionsEl.textContent = Math.floor(marsMissions).toLocaleString();
     
     // === New Fact: Elons needed for yearly debt interest ===
-    const yearlyInterest = totalDebt * DEBT_INTEREST_RATE;
+    const yearlyInterest = baseDebt * DEBT_INTEREST_RATE;
     const elonsForYearlyInterest = yearlyInterest / elonWorth;
 
     factYearlyInterestEl.textContent = elonsForYearlyInterest.toFixed(2);
