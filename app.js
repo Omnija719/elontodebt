@@ -2,6 +2,9 @@
 const DEBT_GROWTH_PER_SEC = 95000; // Estimated U.S. Debt increase per second ($45,000)
 const CITIZEN_POPULATION = 338000000; // Estimated US population
 
+// New: Average interest rate on U.S. national debt
+const DEBT_INTEREST_RATE = 0.038; // 3.8% (adjust as needed)
+
 // State variables
 let baseDebt = 0;
 let baseDebtDate = null;
