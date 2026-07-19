@@ -1,7 +1,7 @@
 // --- Constants & Config ---
 const DEBT_GROWTH_PER_SEC = 95000;
 const CITIZEN_POPULATION = 338000000;
-const DEBT_INTEREST_RATE = 0.038; // 3.8% average interest rate on U.S. debt
+const DEBT_INTEREST_RATE = 0.038; // 3.8%
 
 // State variables
 let baseDebt = 0;
@@ -21,15 +21,13 @@ const lastUpdatedTimeEl = document.getElementById('last-updated-time');
 const gridVisualizerEl = document.getElementById('grid-visualizer');
 const visualizerWorthEl = document.getElementById('visualizer-worth');
 const elonAvatarEl = document.getElementById('elon-avatar');
-const elonSourceEl = document.getElementById('elon-source');
-const elonResidenceEl = document.getElementById('elon-residence');
 
 // Facts Elements
 const factDaysFundedEl = document.getElementById('fact-days-funded');
 const factHoursAccumulateEl = document.getElementById('fact-hours-accumulate');
 const factMarsMissionsEl = document.getElementById('fact-mars-missions');
 
-// --- Canvas Background Animation ---
+// --- Background Animation (kept from your original) ---
 function initBackgroundAnimation() {
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
@@ -52,7 +50,6 @@ function initBackgroundAnimation() {
             this.size = Math.random() * 2 + 0.5;
             this.speedX = (Math.random() - 0.5) * 0.3;
             this.speedY = (Math.random() - 0.5) * 0.3;
-            
             this.type = this.x < width / 2 ? 'space' : 'digital';
             this.color = this.type === 'space' ? 'rgba(232, 33, 39, ' : 'rgba(0, 230, 255, ';
             this.alpha = Math.random() * 0.5 + 0.1;
@@ -63,17 +60,12 @@ function initBackgroundAnimation() {
         update() {
             this.x += this.x < width / 2 ? this.speedX : this.speedX * 0.5;
             this.y += this.speedY;
-
             if (this.x < 0 || this.x > width) this.x = Math.random() * width;
             if (this.y < 0 || this.y > height) this.y = Math.random() * height;
-
             this.type = this.x < width / 2 ? 'space' : 'digital';
             this.color = this.type === 'space' ? 'rgba(232, 33, 39, ' : 'rgba(0, 230, 255, ';
-
             this.alpha += this.fadeSpeed * this.fadeDir;
-            if (this.alpha > 0.6 || this.alpha < 0.1) {
-                this.fadeDir *= -1;
-            }
+            if (this.alpha > 0.6 || this.alpha < 0.1) this.fadeDir *= -1;
         }
 
         draw() {
@@ -86,15 +78,6 @@ function initBackgroundAnimation() {
                 ctx.rect(this.x, this.y, this.size * 2, this.size * 2);
                 ctx.fillStyle = `${this.color}${this.alpha * 0.8})`;
                 ctx.fill();
-                
-                if (Math.random() < 0.002) {
-                    ctx.strokeStyle = `rgba(0, 230, 255, 0.05)`;
-                    ctx.lineWidth = 0.5;
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, 0);
-                    ctx.lineTo(this.x, height);
-                    ctx.stroke();
-                }
             }
         }
     }
@@ -106,19 +89,7 @@ function initBackgroundAnimation() {
     function animate() {
         ctx.fillStyle = 'rgba(7, 9, 19, 0.1)';
         ctx.fillRect(0, 0, width, height);
-
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-
-        const gradient = ctx.createLinearGradient(width / 2 - 2, 0, width / 2 + 2, height);
-        gradient.addColorStop(0, 'rgba(255, 199, 0, 0.01)');
-        gradient.addColorStop(0.5, 'rgba(255, 199, 0, 0.08)');
-        gradient.addColorStop(1, 'rgba(255, 199, 0, 0.01)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(width / 2 - 1, 0, 2, height);
-
+        particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animate);
     }
     animate();
@@ -127,10 +98,7 @@ function initBackgroundAnimation() {
 // --- Formatters ---
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        style: 'currency', currency: 'USD', minimumFractionDigits: 0
     }).format(amount);
 }
 
@@ -142,7 +110,7 @@ function formatBillion(amount) {
 async function loadData() {
     try {
         const response = await fetch('data.json');
-        if (!response.ok) throw new Error('Data file not found.');
+        if (!response.ok) throw new Error('Data file not found');
         
         const data = await response.json();
         
@@ -152,21 +120,69 @@ async function loadData() {
         ratio = data.ratio;
         lastUpdated = data.last_updated;
 
-        elonNetWorthEl.textContent = formatCurrency(elonWorth).split('.')[0];
-        elonNetWorthEl.classList.remove('loading-pulse');
-        
-        elonAvatarEl.src = "https://specials-images.forbesimg.com/imageserve/62d700cd6094d2c180f269b9/416x416.jpg?background=000000&cropX1=0&cropX2=959&cropY1=0&cropY2=959";
-        elonAvatarEl.classList.remove('hidden');
-
-        debtReportDateEl.textContent = data.us_debt_date;
-        lastUpdatedTimeEl.textContent = lastUpdated;
+        if (elonNetWorthEl) elonNetWorthEl.textContent = formatCurrency(elonWorth).split('.')[0];
+        if (debtReportDateEl) debtReportDateEl.textContent = data.us_debt_date;
+        if (lastUpdatedTimeEl) lastUpdatedTimeEl.textContent = lastUpdated;
 
         const debtPerCitizen = baseDebt / CITIZEN_POPULATION;
-        debtPerCitizenEl.textContent = formatCurrency(debtPerCitizen).split('.')[0];
+        if (debtPerCitizenEl) debtPerCitizenEl.textContent = formatCurrency(debtPerCitizen).split('.')[0];
 
         startDebtClock();
         renderRatioDetails();
-        
+
     } catch (error) {
         console.error('Error loading data:', error);
-        ratioDescEl.textContent = 'Error
+        if (ratioDescEl) ratioDescEl.textContent = 'Error loading live tracker.';
+    }
+}
+
+// --- Live Debt Clock ---
+function startDebtClock() {
+    if (!usDebtClockEl) return;
+
+    function tick() {
+        const now = new Date();
+        const timeDiffSeconds = Math.max(0, (now.getTime() - baseDebtDate.getTime()) / 1000);
+        const currentDebt = baseDebt + (timeDiffSeconds * DEBT_GROWTH_PER_SEC);
+        usDebtClockEl.textContent = formatCurrency(currentDebt);
+        requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
+// --- Render Visualizer & Facts (FULL VERSION) ---
+function renderRatioDetails() {
+    if (!ratioNumberEl) return;
+
+    // Ratio Number
+    ratioNumberEl.textContent = ratio.toFixed(4);
+
+    const elonBillions = formatBillion(elonWorth);
+    const debtTrillions = (baseDebt / 1_000_000_000_000).toFixed(2);
+
+    if (ratioDescEl) {
+        ratioDescEl.innerHTML = `It would take exactly <strong class="accent-text">${ratio.toFixed(2)} clones</strong> of Elon Musk's entire fortune ($${elonBillions}B) to pay off the U.S. National Debt ($${debtTrillions}T).`;
+    }
+
+    // Grid Visualizer
+    if (visualizerWorthEl) visualizerWorthEl.textContent = elonBillions;
+    if (gridVisualizerEl) gridVisualizerEl.innerHTML = '';
+
+    const totalIconsNeeded = Math.ceil(ratio);
+    for (let i = 1; i <= totalIconsNeeded; i++) {
+        const iconBox = document.createElement('div');
+        iconBox.className = 'visual-icon-box';
+        const overlay = document.createElement('div');
+        overlay.className = 'fill-overlay';
+        iconBox.appendChild(overlay);
+
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-user-tie';
+        iconBox.appendChild(icon);
+
+        if (i < ratio) {
+            iconBox.classList.add('filled');
+        } else {
+            iconBox.classList.add('partial');
+            const percentRemaining = (ratio - Math.floor(ratio)) * 100;
+            overlay.style.height = `${percentRemaining}%
