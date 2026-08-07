@@ -32,19 +32,21 @@ begin
   debt_date = latest_debt['record_date']
   puts "U.S. Debt: $#{total_debt}"
 
-  # 2. Fetch Forbes with retry
-  forbes_url = "https://forbes400.onrender.com/api/forbes400?limit=10"
-  puts "Fetching Forbes list from mirror..."
-  forbes_response = fetch_with_retry(forbes_url)
-  forbes_json = JSON.parse(forbes_response)
+  # 2. Fetch Net Worth (from Wikipedia since Forbes APIs are down)
+  wiki_url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&rvsection=0&titles=Elon_Musk&format=json"
+  puts "Fetching Elon Musk net worth from Wikipedia..."
+  wiki_response = URI.open(wiki_url, "User-Agent" => "Mozilla/5.0", ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
+  wiki_json = JSON.parse(wiki_response)
+  content = wiki_json.dig("query", "pages").values.first.dig("revisions", 0, "*")
   
-  elon = forbes_json.find { |p| p['personName'].to_s.downcase.include?('elon musk') || p['uri'] == 'elon-musk' }
-  
-  if elon
-    elon_worth = elon['finalWorth'].to_f * 1_000_000
+  match = content.match(/US\$([0-9.]+)\s+(billion|trillion)/i)
+  if match
+    val = match[1].to_f
+    mult = match[2].downcase == 'trillion' ? 1_000_000_000_000 : 1_000_000_000
+    elon_worth = val * mult
     puts "Elon Net Worth: $#{elon_worth}"
   else
-    raise "Elon Musk not found in Forbes list"
+    raise "Could not parse Elon Musk's net worth from Wikipedia"
   end
 
   ratio = total_debt / elon_worth
