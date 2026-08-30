@@ -32,21 +32,39 @@ begin
   debt_date = latest_debt['record_date']
   puts "U.S. Debt: $#{total_debt}"
 
-  # 2. Fetch Net Worth (from Wikipedia since Forbes APIs are down)
-  wiki_url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&rvsection=0&titles=Elon_Musk&format=json"
-  puts "Fetching Elon Musk net worth from Wikipedia..."
-  wiki_response = URI.open(wiki_url, "User-Agent" => "Mozilla/5.0", ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
-  wiki_json = JSON.parse(wiki_response)
-  content = wiki_json.dig("query", "pages").values.first.dig("revisions", 0, "*")
-  
-  match = content.match(/US\$([0-9.]+)\s+(billion|trillion)/i)
-  if match
-    val = match[1].to_f
-    mult = match[2].downcase == 'trillion' ? 1_000_000_000_000 : 1_000_000_000
-    elon_worth = val * mult
-    puts "Elon Net Worth: $#{elon_worth}"
-  else
-    raise "Could not parse Elon Musk's net worth from Wikipedia"
+  # 2. Fetch Net Worth (Primary: Forbes Real-Time Billionaires dataset, Fallback: Wikipedia)
+  elon_worth = nil
+  begin
+    puts "Fetching Elon Musk net worth from Forbes RTB dataset..."
+    forbes_history_url = "https://raw.githubusercontent.com/komed3/rtb-api/main/api/profile/elon-musk/history"
+    forbes_response = fetch_with_retry(forbes_history_url)
+    last_line = forbes_response.strip.split("\n").last
+    parts = last_line.split(/\s+/)
+    worth_millions = parts[2].to_f
+    if worth_millions > 0
+      elon_worth = worth_millions * 1_000_000
+      puts "Elon Net Worth (Forbes RTB): $#{elon_worth} (Date: #{parts[0]})"
+    end
+  rescue => e
+    puts "Forbes RTB dataset fetch failed (#{e.message}). Falling back to Wikipedia..."
+  end
+
+  if elon_worth.nil? || elon_worth == 0
+    wiki_url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&rvsection=0&titles=Elon_Musk&format=json"
+    puts "Fetching Elon Musk net worth from Wikipedia..."
+    wiki_response = URI.open(wiki_url, "User-Agent" => "Mozilla/5.0", ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE).read
+    wiki_json = JSON.parse(wiki_response)
+    content = wiki_json.dig("query", "pages").values.first.dig("revisions", 0, "*")
+    
+    match = content.match(/US\$([0-9.]+)\s+(billion|trillion)/i)
+    if match
+      val = match[1].to_f
+      mult = match[2].downcase == 'trillion' ? 1_000_000_000_000 : 1_000_000_000
+      elon_worth = val * mult
+      puts "Elon Net Worth (Wikipedia): $#{elon_worth}"
+    else
+      raise "Could not parse Elon Musk's net worth from Forbes or Wikipedia"
+    end
   end
 
   ratio = total_debt / elon_worth
