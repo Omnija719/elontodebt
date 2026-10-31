@@ -18,7 +18,9 @@ def generate_social_image():
     width, height = img.size
     
     # Load fonts - significantly larger (roughly 3x)
-    font_path = os.path.join(os.path.dirname(__file__), 'Orbitron-Bold.ttf')
+    font_path = os.path.join(os.path.dirname(__file__), 'Orbitron.ttf')
+    if not os.path.exists(font_path):
+        font_path = os.path.join(os.path.dirname(__file__), 'Orbitron-Bold.ttf')
     try:
         ratio_font = ImageFont.truetype(font_path, 140)     # Big ratio number
         elons_font = ImageFont.truetype(font_path, 140)      # "ELONS" label
